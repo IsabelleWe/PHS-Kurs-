@@ -1,0 +1,37 @@
+---
+title: "Ebola in Guinea, Sierra Leone and Liberia"
+author: "Isabelle Wethli"
+date: "`r date()`"
+format: 
+html:
+  toc: true
+  code-fold: show
+  code-tools: true 
+  df-print: paged 
+  embeded-resources: true 
+---
+
+```{r}
+#| output: false 
+#load libraries 
+library(here)
+library(tidyverse)
+library(lubridate)
+library(unibeCols)
+```
+
+## Introduction
+
+The aim of this exercise is to visualize the increase in laboratory-confirmes cases of COVID-19 in Switzerland during autumn 2020.
+
+## Data
+
+Load data from FOPH.
+
+```{r}
+#| output: false
+# Read data
+data.ebola <- read_csv("data/raw/ebola.csv")
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
