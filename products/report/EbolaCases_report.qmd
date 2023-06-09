@@ -3,12 +3,12 @@ title: "Ebola in Guinea, Sierra Leone and Liberia"
 author: "Isabelle Wethli"
 date: "`r date()`"
 format: 
-html:
-  toc: true
-  code-fold: show
-  code-tools: true 
-  df-print: paged 
-  embeded-resources: true 
+  html:
+    toc: true
+    code-fold: show
+    code-tools: true 
+    df-print: paged 
+    embeded-resources: true 
 ---
 
 ```{r}
@@ -22,16 +22,43 @@ library(unibeCols)
 
 ## Introduction
 
-The aim of this exercise is to visualize the increase in laboratory-confirmes cases of COVID-19 in Switzerland during autumn 2020.
+The aim is to visualize the Ebola outbreaks in Guinea, Sierra Leone and Liberia.
 
 ## Data
 
 Load data from FOPH.
 
 ```{r}
-#| output: false
+#| include: false
 # Read data
-data.ebola <- read_csv("data/raw/ebola.csv")
+cases <- read_csv("C:/Users/iw21u138/Documents/R_project_template/project-template-main/data/raw/ebola.csv")
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+```{r}
+#Process data
+#|include: false
+selection <- c("Sierra Leone","Liberia","Guinea")
+window_start <- ymd("2014-08-28")
+window_end <- ymd("2015-04-01")
+cases <- cases |>
+   filter (Country %in% selection & Date >= window_start & Date <= window_end) |>
+  select(Date, Cum_conf_cases)
+```
+
+##Results 
+@fig-cases shows the number of laboratory-confirmed cases of Ebola in Guinea, Sierra Leone and Liberia from `r window_start` to `r window_end`.
+
+```{r}
+#| label: fig-cases
+#| fig-cap: "Laboratory-confirmed cases of Ebola in Guinea, Sierra Leone and Liberia."
+#| fig-width: 8
+#| fig-height: 4
+ggplot(cases, aes(x = Date, y = Cum_conf_cases)) +
+  geom_bar(stat = "identity", fill = unibeSaphireS()[1]) +
+  labs(x = "Date", y = "Cases", ) +
+  theme_minimal()
+```
+
+## Conclusions
+
+The number of laboratory-confirmed cases of Ebola rapidly increased.

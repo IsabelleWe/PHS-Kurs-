@@ -1,0 +1,111 @@
+---
+title: "Report assignment"
+author: "Isabelle Wethli"
+format: 
+ html:
+  toc: true
+  code-fold: show
+  code-tools: true 
+  df-print: paged 
+  embeded-resources: true 
+---
+
+## Introduction
+
+The aim is to visualize the effects of smoking on insurance charges.
+
+## Data
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(gtsummary)
+library(here)
+
+dat <- read_csv(here("data/raw/insurance_with_date.csv"))
+str(dat)
+
+dataselect <- dat |>
+  select(sex, bmi, smoker, charges, region) |>
+  mutate(sex = factor(sex, levels=c("male", "female"), labels=c("m","f")),
+         smoker = factor(smoker))
+```
+
+## Descriptive Statistics
+
+This helps to visualize the effect of smoking on insurance charges.
+
+```{r}
+tabl_summary <- dat |>   
+  tbl_summary(
+    by = smoker,
+    type = all_continuous() ~ "continuous2",
+    include =c("charges","bmi","age"),
+    statistic = all_continuous() ~ c("{mean} ({sd})", 
+                                     "{median} ({p25}, {p75})", 
+                                     "{min}, {max}")
+  )
+tabl_summary
+```
+
+## 
+
+Boxplot 1: Smokers vs. Non-Smokers - Who has more charges?
+
+```{r}
+ggplot(dataselect, aes(x=smoker, y=charges, fill = smoker)) + 
+  geom_boxplot() +
+  ggtitle(label = "Smokers vs. Non-Smokers") +
+  xlab(label = "") +
+  ylab(label = "Charges from insurance") +
+  theme_bw() + theme(legend.position="bottom") 
+```
+
+Histogram of charges
+
+```{r}
+ggplot(dat, aes(x=charges)) + 
+  geom_histogram(bins=50)
+```
+
+This histogram shows that the data is not normalized. In order to do a T-Test on the data, we have to logarithmise the charges.
+
+## Inferential Statistics
+
+Logarithmise the charges
+
+```{r}
+#| output: false 
+  dat$chargeslog <- log(dat$charges)
+dat$chargeslog
+```
+
+Histogram of charges
+
+```{r}
+ggplot(dat, aes(x=chargeslog, fill = smoker)) + 
+  geom_histogram(bins=50) +
+  theme_bw() + theme(legend.position="bottom") 
+```
+
+Test normality
+
+```{r}
+dat %>%
+  ggplot(aes(sample = chargeslog, fill = smoker, colour = smoker)) +
+  geom_qq_line(distribution =  stats::qnorm) +
+  geom_qq(distribution =  stats::qnorm) +
+  xlab("theoretical") +
+  ylab("sample") +
+  theme_classic() +
+  facet_wrap("sex")
+```
+
+## T-Test charges smokers vs. non-smokers
+
+H0: Smoking is not associated with the insurance charges 
+HA: Smoking is associated with insurance charges
+
+```{r}
+t.test(chargeslog ~ smoker, data = dat)
+```
