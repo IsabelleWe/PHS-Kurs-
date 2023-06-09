@@ -33,7 +33,7 @@ dataselect <- dat |>
 
 ## Descriptive Statistics
 
-This helps to visualize the effect of smoking on insurance charges.
+This helps to visualize the effect of smoking on insurance charges. s
 
 ```{r}
 tabl_summary <- dat |>   
